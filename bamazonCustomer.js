@@ -61,6 +61,7 @@ function promptOption() {
                       ])
                       .then(function(inquirerResponse2) {
                           var updatedStock = results.stock_quantity - inquirerResponse2.option2;
+                          var total = results.price * inquirerResponse2.option2;
                           console.log("Checking stock... " + "We have " + results.stock_quantity + " units left\n");
                           if (results.stock_quantity < inquirerResponse2.option2) {
                               console.log("Sorry, there's not enough stock.");
@@ -80,6 +81,8 @@ function promptOption() {
                                     function (err, results) {
                                         if (err) throw err;
                                         console.log("Stock left: " + updatedStock + "\n");
+                                        console.log("Your total is: $" + total + "\n");
+                                        connection.end();
                                     }
                                 );
                                 });
