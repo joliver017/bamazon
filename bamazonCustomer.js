@@ -62,27 +62,31 @@ function promptOption() {
                       .then(function(inquirerResponse2) {
                           var updatedStock = results.stock_quantity - inquirerResponse2.option2;
                           console.log("Checking stock... " + "We have " + results.stock_quantity + " units left\n");
-                          console.log("Stock left: " + updatedStock + "\n");
-                          
-                          if (inquirerResponse2.option2) {
-                            // console.log(inquirerResponse2.option2);                            
-                            connection.query(
-                              "SELECT * FROM products WHERE item_id=?", [inquirerResponse1.option1],
-                          
-                            function (err, results) {
-                                if (err) throw err;
-                                results.forEach(results=> {                                
-                                connection.query(
-                                  "UPDATE products SET stock_quantity=" + updatedStock + " WHERE item_id=" + inquirerResponse1.option1,
-                                  function (err, results) {
-                                      if (err) throw err;
-                                      console.log("working");
-                                  }
-                              );
+                          if (results.stock_quantity < inquirerResponse2.option2) {
+                              console.log("Sorry, there's not enough stock.");
+                              connection.end();
+                          }
+                          else {
+                              if (inquirerResponse2.option2) {
+                              // console.log(inquirerResponse2.option2);                            
+                              connection.query(
+                                "SELECT * FROM products WHERE item_id=?", [inquirerResponse1.option1],
+                            
+                              function (err, results) {
+                                  if (err) throw err;
+                                  results.forEach(results=> {                                
+                                  connection.query(
+                                    "UPDATE products SET stock_quantity=" + updatedStock + " WHERE item_id=" + inquirerResponse1.option1,
+                                    function (err, results) {
+                                        if (err) throw err;
+                                        console.log("Stock left: " + updatedStock + "\n");
+                                    }
+                                );
+                                });
+
+
                               });
-
-
-                            });
+                            }
                           }
                       });
                 });
