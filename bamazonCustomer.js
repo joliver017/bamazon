@@ -26,7 +26,11 @@ function start() {
     console.log("Reading all items...\n");
     connection.query("SELECT * FROM products", function (err, results) {
         if (err) throw err;
-        console.log(results);
+        results.forEach(results=> {
+          console.log("Product Name: " + results.product_name + "\n Item ID: " + results.item_id + 
+          "\n Department: " + results.department_name + "\n Price: $" + results.price + "\n Current Stock: " + results.stock_quantity + "\n");
+        });
+        
         promptOption();
         // connection.end();
     });
@@ -61,7 +65,7 @@ function promptOption() {
                       ])
                       .then(function(inquirerResponse2) {
                           var updatedStock = results.stock_quantity - inquirerResponse2.option2;
-                          var total = results.price * inquirerResponse2.option2;
+                          var total = (results.price * inquirerResponse2.option2).toFixed(2);
                           console.log("Checking stock... " + "We have " + results.stock_quantity + " units left\n");
                           if (results.stock_quantity < inquirerResponse2.option2) {
                               console.log("Sorry, there's not enough stock.");
@@ -93,8 +97,6 @@ function promptOption() {
                           }
                       });
                 });
-                // console.log("How many units of " + results.product_name + " would you like to buy?")});
-                // connection.end();
             });
           }
       });
