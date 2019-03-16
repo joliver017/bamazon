@@ -1,4 +1,5 @@
 var mysql = require("mysql");
+var inquirer = require("inquirer");
 
 var connection = mysql.createConnection({
   host: "localhost",
@@ -18,14 +19,68 @@ var connection = mysql.createConnection({
 connection.connect(function(err) {
     if (err) throw err;
     console.log("connected as id " + connection.threadId);
-    readItems();
+    start();
   });
 
-function readItems() {
+function start() {
     console.log("Reading all items...\n");
     connection.query("SELECT * FROM products", function (err, results) {
         if (err) throw err;
         console.log(results);
-        connection.end();
+        promptOption();
+        // connection.end();
     });
+}
+
+function promptOption() { 
+  inquirer
+      .prompt([
+          {
+          type: "input",
+          message: "What is the Item ID of the product you would like to purchase?",
+          name: "option1"
+          }
+      ])
+      .then(function(inquirerResponse1) {
+          console.log("Searching item...\n");
+          if (inquirerResponse1.option1) {
+            // console.log(inquirerResponse.option1);
+            connection.query(
+              "SELECT * FROM products WHERE item_id=?", [inquirerResponse1.option1],
+          
+            function (err, results) {
+                if (err) throw err;
+                results.forEach(results=> {
+                  inquirer
+                      .prompt([
+                          {
+                          type: "input",
+                          message: "How many units of " + results.product_name + " would you like to buy?",
+                          name: "option2"
+                          }
+                      ])
+                      .then(function(inquirerResponse2) {
+                          console.log("Checking stock...\n");
+                          if (inquirerResponse2.option2) {
+                            // console.log(inquirerResponse2.option2);
+                            connection.query(
+                              "SELECT * FROM products WHERE item_id=?", [inquirerResponse1.option1],
+                          
+                            function (err, results) {
+                                if (err) throw err;
+                                results.forEach(results=> {
+                                console.log("Stock left: " + results.stock_quantity);
+                                
+                              });
+
+
+                            });
+                          }
+                      });
+                });
+                // console.log("How many units of " + results.product_name + " would you like to buy?")});
+                // connection.end();
+            });
+          }
+      });
 }
